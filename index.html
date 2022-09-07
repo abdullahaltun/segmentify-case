@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="assets/styles/main.css">
+        <title>Segmentify Project</title>
+        <link rel="stylesheet" type="text/css" href="assets/scripts/libs/slick/slick.css"/>
+        <link rel="stylesheet" type="text/css" href="assets/scripts/libs/slick/slick-theme.css"/>
+    </head>
+    <body>
+        <div class="container">
+            <div class="title">
+                Sizin için Seçtiklerimiz
+            </div>
+            <div class="container-alt">
+                <ul id="categories"></ul>
+                <div id="items"></div>
+            </div>
+        </div>
+        <div id="popup">
+            <div class="popup-wrapper">
+                <div style="display: flex">
+                    <img class="lazy" src="assets/images/24559847.jpg" data-src="https://img.icons8.com/color/344/ok.png" />
+                    <div style="margin-left: 12px" >
+                        <div>Ürün Sepetinize Eklendi</div>
+                        <div style="color: #6495ed" >Sepete git</div>
+                    </div>
+                </div>
+                <div class="close-popup">
+                    <img id="close-popup-icon" class="lazy" src="https://img.icons8.com/office/344/xbox-x.png" />
+                </div>
+            </div>
+        </div>
+        <script src="assets/scripts/libs/jquery/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript" src="assets/scripts/libs/slick/slick.min.js"></script>
+        <script type="text/javascript" src="assets/scripts/functions.js"></script>
+        <script>
+            $(function() {
+				document.getElementById('close-popup-icon').addEventListener('click', closePopup)
+                readTextFile('product-list.json', function(data) {
+                    let isFirstMenuItemSelected = false
+                    const userCategories = data.responses[0][0].params.userCategories
+					const itemsJqueryObj = $('#items')
+					userCategories.forEach(function(category) {
+                        const categoryElement = createCategoryElement(category)
+                        categoryElement.addEventListener('click', function (event) {
+							selectCategory(event.target.id)
+                            if (isFirstMenuItemSelected) {
+								itemsJqueryObj.slick('unslick')
+                            }
+                            document.getElementById('items').innerHTML = ''
+                            const products = data.responses[0][0].params.recommendedProducts[event.target.id]
+                            products.forEach(function(product) {
+                                const itemCard = createItemCardElement()
+								itemCard.appendChild(createItemImageElement(product.image))
+								itemCard.appendChild(createItemNameElement(product.name))
+								itemCard.appendChild(createPriceElement(product.priceText))
+								itemCard.appendChild(createShippingElements(product.params.shippingFee))
+								itemCard.appendChild(createChartElement())
+
+								const itemsCtr = document.getElementById('items')
+								itemsCtr.appendChild(itemCard)
+                            })
+							configureSlick()
+							itemsJqueryObj.on('afterChange', loadLazy)
+							loadLazy()
+                        })
+
+						const categoriesElement = document.getElementById('categories')
+                        categoriesElement.appendChild(categoryElement)
+                    })
+                    $(document).ready(function() {
+						itemsJqueryObj.ready(function() {
+                            $('li:first-child').trigger('click')
+                            isFirstMenuItemSelected = true
+							loadLazy()
+                        })
+                    })
+                })
+            })
+        </script>
+    </body>
+</html>

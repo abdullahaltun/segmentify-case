@@ -1,0 +1,14 @@
+{
+  "name": "segmentify-case",
+  "version": "1.0.0",
+  "description": "segmentify case project",
+  "main": "index.html",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  },
+  "scripts": {
+    "serve": "http-server ."
+  },
+  "author": "abdullah.altun",
+  "license": "ISC"
+}
